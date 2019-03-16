@@ -79,7 +79,20 @@ class Word(models.Model): #### ORDER_BY
     def save(self, *args, **kwargs):
         # Enforcing lowercase in database, for uniformity
         self.label = self.label.lower()
-        print("word-label is: " + self.label)
+        print("word-label is: " + self.label + "  -- SAVED!")
+
+        # Find alphagram (sorted label)
+        alpha_str = "".join( sorted(list(self.label)) )
+        
+        if Alphagram.objects.filter(label=alpha_str).exists():
+            self.alphagram = Alphagram.objects.get(label=alpha_str)
+        else:
+            new_alpha = Alphagram()
+            new_alpha.label = alpha_str
+            new_alpha.save()
+            self.alphagram = new_alpha
+
+        super(Word, self).save(*args, **kwargs)
 
 class WordDefinition(models.Model):
     """ Dictionary definition. Usable for multiple definition entries, classed by language. Possibly in need of extending.
