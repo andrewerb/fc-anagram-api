@@ -75,6 +75,11 @@ class Word(models.Model): #### ORDER_BY
     
     def __str__(self):
         return self.label
+    
+    def save(self, *args, **kwargs):
+        # Enforcing lowercase in database, for uniformity
+        self.label = self.label.lower()
+        print("word-label is: " + self.label)
 
 class WordDefinition(models.Model):
     """ Dictionary definition. Usable for multiple definition entries, classed by language. Possibly in need of extending.
