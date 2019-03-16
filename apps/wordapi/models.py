@@ -18,22 +18,23 @@ from django.db import models
 from django.utils import timezone
 
 
+#   Data Models
 class WordLanguage(models.Model):
-    word_text = models.CharField(max_length=30, unique=True)
+    label = models.CharField(max_length=30, unique=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.word_text
+        return self.label
 
 class Alphagram(models.Model):
-    word_text = models.CharField(max_length=50, unique=True)
+    label = models.CharField(max_length=50, unique=True)
     
     def __str__(self):
-        return self.word_text
+        return self.label
 
 class Word(models.Model):
-    word_text = models.CharField(max_length=50, unique= true)
+    label = models.CharField(max_length=50) # Not unique. Other words (homographs) may have same spelling, but unique IDs.
     alphagram = models.ForeignKey(Alphagram, on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.word_text
+        return self.label
