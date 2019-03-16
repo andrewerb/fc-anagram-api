@@ -1,14 +1,23 @@
 """ Word API Data models
 
-    For Django fc_coding_challenge - wordapi app.
+For Django fc_coding_challenge - wordapi app.
 
-    - This model exist for querying words, across lanaugages/dictionaries, via API.
-    - The intended usecase of this model and API is to find word-matches to substring user-queries, and anagrams of those matching words.
-    - Alphagrams are used here to assocate words in data that are anagrams to each other.
-    - All words that are anagrams of one another will also share the same alphagram– the string resulting from sorting a word/string's letters/characters alphabetically.  https://en.wiktionary.org/wiki/alphagram
+- This model exist for querying words, across lanaugages/dictionaries, via API.
+- The intended usecase of this model and API is to find word-matches to substring user-queries, and anagrams of those matching words.
+- Alphagrams are used here to assocate words in data that are anagrams to each other.
+- All words that are anagrams of one another will also share the same alphagram– the string resulting from sorting a word/string's letters/characters alphabetically.  https://en.wiktionary.org/wiki/alphagram
 
-    Model overview:
-    TODO
+Models:
+    WordLanguage
+    Alphagram
+    Word
+    WordDefinition : Not really used at this point, but available.
+
+TODO: 
+    - SAVE override methods for anagrams!
+    - ORDER BY
+    - label - string to lower (even if handled elsewhere)
+    - created_date
 
 """
 
@@ -21,27 +30,64 @@ from django.utils import timezone
 
 #   Data Models
 class WordLanguage(models.Model):
-    """ WordLanguage is the dictionary language, associated with words by a many-to-one relationship. The name is cumbersome due to the vague nature of the word 'language'.
+    """ Language of words and dictionary entries.
+    
+    Associated with words by a many-to-one relationship. The name is cumbersome due to the vague nature of the word 'language'.
+
+    Attributes:
+        label, creeated_date
     """
     label = models.CharField(max_length=30, unique=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.label
+    ## TODO: META, sort, SAVE
+    ## SORT
 
 class Alphagram(models.Model):
-    """ Alphagrams for association with words by a many to one relationship. Primarily used to find words' anagrams.
+    """ Alphagram - alphabetically sorted string/word.
+
+    For association with words by a many to one relationship. Primarily used to find words' anagrams.
+
+    Note: Alphagrams have no language attribute, and are language agnostic. (Because words across languages can be anagrams. That can be specified in a query filter.)
+
+    Attributes:
+        label
     """
+
     label = models.CharField(max_length=50, unique=True)
     
     def __str__(self):
         return self.label
 
-class Word(models.Model):
+class Word(models.Model): #### ORDER_BY
     """ Words from dictionary list.
+
+    label, language, alphagrams
     """
+
     label = models.CharField(max_length=50) # Not unique. Other words (homographs) may have same spelling, but unique IDs.
+    language = models.ForeignKey(WordLanguage, blank=True, null=True, on_delete=models.CASCADE) # make required
     alphagram = models.ForeignKey(Alphagram, on_delete=models.CASCADE)
+    # homograph_count = models.IntegerField(default=0) # use if able to initialize. Reference by lookup.
+    # is_palindrome = models.BooleanField(default=False)
     
+    def __str__(self):
+        return self.label
+
+class WordDefinition(models.Model):
+    """ Dictionary definition. Usable for multiple definition entries, classed by language. Possibly in need of extending.
+        
+    Has many-to-one relationships with Language of the definition, and with the Word the definiton is for. (Definition and language can theoretically be different languages).
+    
+    Attributes:
+        label, detail, word, language
+    """
+    label = models.CharField(max_length=30, blank = False)
+    detail = models.TextField(blank=False)
+    word = models.ForeignKey(Word, blank=False, null=False, on_delete=models.CASCADE)
+    language = models.ForeignKey(WordLanguage, blank=False, null=False, on_delete=models.CASCADE)
+
     def __str__(self):
         return self.label
