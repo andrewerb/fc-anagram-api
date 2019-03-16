@@ -14,9 +14,7 @@ Models:
     WordDefinition : Not really used at this point, but available.
 
 TODO: 
-    - SAVE override methods for anagrams!
     - ORDER BY
-    - label - string to lower (even if handled elsewhere)
     - created_date
 
 """
@@ -28,9 +26,9 @@ from django.db import models
 from django.utils import timezone
 
 
-#   Data Models
+##  Data Models  ##
 class WordLanguage(models.Model):
-    """ Language of words and dictionary entries.
+    """ Language, for words and dictionary entries.
     
     Associated with words by a many-to-one relationship. The name is cumbersome due to the vague nature of the word 'language'.
 
@@ -45,15 +43,12 @@ class WordLanguage(models.Model):
     ## TODO: META, sort, SAVE
     ## SORT
 
+
 class Alphagram(models.Model):
-    """ Alphagram - alphabetically sorted string/word.
+    """ Alphagram - alphabetically sorted string/word. 
+    Referenced by words as many-to-one relationship. Used to find words' anagrams. Unique by label; redundancy would make this useless as an anagram-key.
 
-    For association with words by a many to one relationship. Primarily used to find words' anagrams.
-
-    Note: Alphagrams have no language attribute, and are language agnostic. (Because words across languages can be anagrams. That can be specified in a query filter.)
-
-    Attributes:
-        label
+    Attributes: label
     """
 
     label = models.CharField(max_length=50, unique=True)
@@ -61,32 +56,49 @@ class Alphagram(models.Model):
     def __str__(self):
         return self.label
 
+    class Meta:
+        ordering = ['label']
+
+
 class Word(models.Model): #### ORDER_BY
     """ Words from dictionary list.
 
-    label, language, alphagrams
+    Attributes: label, language, alphagrams
     """
 
-    label = models.CharField(max_length=50) # Not unique. Other words (homographs) may have same spelling, but unique IDs.
-    language = models.ForeignKey(WordLanguage, blank=True, null=True, on_delete=models.CASCADE) # make required
+    # Labels are not unique, because other words in DB (homographs) may have same spelling w/ unique IDs.
+    label = models.CharField(max_length=50) 
+    language = models.ForeignKey(WordLanguage, blank=True, null=True, on_delete=models.CASCADE) # TODO: Required
     alphagram = models.ForeignKey(Alphagram, on_delete=models.CASCADE)
-    # homograph_count = models.IntegerField(default=0) # use if able to initialize. Reference by lookup.
+    
+    # homograph_count = models.IntegerField(default=0) # use if able to initialize.
     # is_palindrome = models.BooleanField(default=False)
     
     def __str__(self):
         return self.label
     
     def save(self, *args, **kwargs):
+        """ Save overrides, for setting up attribute-fields from the word's label.
+        
+        Attributes checked here: label-lowercasing, alphagram object
+        TODO: Add Homograph count and efault language if there's only one. Make more abstract?
+        """
         # Enforcing lowercase in database, for uniformity
         self.label = self.label.lower()
         print("word-label is: " + self.label + "  -- SAVED!")
 
+        #homograph
+        #language
+
+        ## Alphagram setup ##
         # Find alphagram (sorted label)
         alpha_str = "".join( sorted(list(self.label)) )
         
         if Alphagram.objects.filter(label=alpha_str).exists():
+            # If alphagram is in data, set it as foreign key.
             self.alphagram = Alphagram.objects.get(label=alpha_str)
         else:
+            # Create alphagram object, save it, and set it as foreign key.
             new_alpha = Alphagram()
             new_alpha.label = alpha_str
             new_alpha.save()
@@ -94,10 +106,19 @@ class Word(models.Model): #### ORDER_BY
 
         super(Word, self).save(*args, **kwargs)
 
+    class Meta:
+        ordering = ['label']
+    ## Sort by
+    
+    #if getattr(self, '_image_changed', True):
+    
+    ## save homograph - ?
+
+
 class WordDefinition(models.Model):
     """ Dictionary definition. Usable for multiple definition entries, classed by language. Possibly in need of extending.
         
-    Has many-to-one relationships with Language of the definition, and with the Word the definiton is for. (Definition and language can theoretically be different languages).
+    Has many-to-one relationships with Language (of the definition), and with Word (which the definiton is for). Definition and word can be different languages.
     
     Attributes:
         label, detail, word, language
