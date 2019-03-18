@@ -25,7 +25,7 @@ SECRET_KEY = 'gx+ztf^*oryzsr_3z=#ub8%=srz+gbzlqj8d6s5v!qwdsnr88b'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1","localhost"]
 
 
 # Application definition
@@ -56,7 +56,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'apps/wordapi/templates')], #'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'environment': 'config.jinja2.environment'
@@ -64,7 +64,7 @@ TEMPLATES = [
     },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'apps/wordapi/templates')], #'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,9 +74,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
-    {
-        'DIRS': [os.path.join(BASE_DIR, 'apps.wordapi.templates')],
     },
 ]
 
