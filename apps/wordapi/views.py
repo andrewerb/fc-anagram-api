@@ -126,10 +126,10 @@ class AnagramView(ValidParamView, APIView):
 class AnagramBySubstringView(ValidParamView, APIView):
     """ Anagrams
 
-        Validates query-param
-        Queries words for which query-param is a substring of the word
-        Finds anagrams of said words
-        Returns them ordered by 2nd char (index at [1])
+        - Validates query-param
+        - Queries words for which query-param is a substring of the word
+        - Finds anagrams of said words
+        - Returns them ordered by 2nd char (index at [1])
 
         Enforced here: digits and substring parameters with length less than 2 are ignored.
     """
@@ -163,8 +163,9 @@ class AnagramBySubstringView(ValidParamView, APIView):
 #############################
 ##  Default API View Sets  ##
 #############################
-# Django Rest Framework boilerplate for Model API views
-# Useful, but non-essential to this API
+""" Django Rest Framework boilerplate for Model API views
+    Useful, but non-essential to this API
+"""
 class WordViewSet(viewsets.ModelViewSet):
     """ API endpoint for dictionary words
     """
