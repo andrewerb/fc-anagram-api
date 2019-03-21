@@ -8,15 +8,18 @@
 
 # Python libraries. Time and regular expressions
 import datetime, re
+
 # Django HTTP libraries
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+
 # Django rest libraries for responses and views
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 # API app serializers and data models
 from .serializers import *
 from .models import *
@@ -174,14 +177,16 @@ class WordViewSet(viewsets.ModelViewSet):
 
 
 class LanguageViewSet(viewsets.ModelViewSet):
-    """ API endpoint that allows WordLanguages to be viewed or edited. # TODO!
+    """ API endpoint that allows WordLanguages
     """
     queryset = WordLanguage.objects.all()
     serializer_class = LanguageSerializer
 
 
 class AlphagramViewSet(viewsets.ModelViewSet):
-    """ API endpoint that allows Alphagrams to be viewed or edited. # TODO!
+    """ API endpoint that allows Alphagrams
+
+        Primarily for testing!
     """
     queryset = Alphagram.objects.all()
     serializer_class = LanguageSerializer
