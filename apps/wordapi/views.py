@@ -4,22 +4,20 @@
 
     API Views:
     words, languages, words by substring (containing input) match, anagrams, anagrams by substring
-
-    This file also includes a customized 404 response "None" for empty queries, and a view for the web index page
 """
 
-
+# Python libraries. Time and regular expressions
 import datetime, re
-
+# Django HTTP libraries
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
-
+# Django rest libraries for responses and views
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+# API app serializers and data models
 from .serializers import *
 from .models import *
 
@@ -27,12 +25,8 @@ from .models import *
 #############################################
 ##  BEHAVIORAL ABSTRACTIONS FOR API VIEWS  ##
 #############################################
-def response_404_none():
-    """ Return "None" and 404 status code
-        For GET requests from API endpoints, where/when queries yield no result
-    """
-    return Response("None", status=status.HTTP_404_NOT_FOUND)
-
+""" Inheritable class for API views to handle query parameter validation and 404 responses
+"""
 class ValidParamView():
     def response_404_none(self):
         """ Return "None" and 404 status code
@@ -129,41 +123,42 @@ class AnagramView(ValidParamView, APIView):
         return self.response_404_none()
 
 
-class AnagramBySubstringView(APIView): # TODO - less copy pasta?
+class AnagramBySubstringView(ValidParamView, APIView):
+    """ Anagrams
+
+        Validates query-param
+        Queries words for which query-param is a substring of the word
+        Finds anagrams of said words
+        Returns them ordered by 2nd char (index at [1])
+
+        Enforced here: digits and substring parameters with length less than 2 are ignored.
+    """
     def get(self, request, format=None, substr_input=""):
-        if not substr_input:
-            # 404 if the search query is empty
-            return response_404_none()
-        else:
-            # substr_input isn't empty
+        """ GET request method, taking URL param
+        """
+        if self.long_valid_param(substr_input):
+            # Valid query substring
 
-            subject_word_set = Word.objects.filter(label__icontains=substr_input) # Queryset of words containing input-string as a substring. Used as subject-words for anagram fetching.
+            subject_word_set = Word.objects.filter(label__icontains=substr_input) # Queryset of words containing substring. Used as subject-words for anagram fetching.
             
-            if subject_word_set.count():
-                # Proceed with anagram search if subject words were found.
+            anagram_set = set() # set of anagrams found
 
-                anagram_set = [] # list for anagrams
-
-                # Nested iterator for anagrams of all subject-words (substring-matches) into anagram list:
-                for subject in subject_word_set:
-                    # Iterate every subject-word in queryset
-                    anagrams = subject.alphagram.word_set.all().exclude(id=subject.id) # Set of anagrams of the current subject-word (excluding the subject word itself)
-                    for ana in anagrams: # Iterate current set of anagrams
-                        print ("Currently viewing:  " + ana.label) # Testing
-                        if not ana in anagram_set: # Add to anagram_set if it's not already in the list
-                            anagram_set.append(ana)
-                            print("Appended to list!") # Testing
+            # Nested iterator for anagrams of all subject-words (substring-matches) into anagram list:
+            for subject in subject_word_set:
+                # Iterate every subject-word in queryset
+                anagrams = subject.alphagram.word_set.all().exclude(id=subject.id) # Set of anagrams of the current subject-word (excluding the subject word itself)
                 
-                if anagram_set:
-                    # Anagram set isn't empty
-                    anagram_set = sorted(anagram_set, key=lambda x: x.label[1:], reverse=False)[:10] # First 10 items of set of results, after sorting by their 2nd character
-                    serializer = WordSerializer(anagram_set, many=True)
-                    return Response(serializer.data)
-                else:
-                    return response_404_none() # 404 - None if set was empty
+                for ana in anagrams: # Iterate current set of anagrams
+                    anagram_set.add(ana)
             
-            else:
-                return response_404_none()
+            if anagram_set:
+                # Anagram set isn't empty
+                anagram_set = sorted(anagram_set, key=lambda x: x.label[1:], reverse=False)[:10] # First 10 items of set of results, after sorting by their 2nd character
+                serializer = WordSerializer(anagram_set, many=True)
+                return Response(serializer.data)
+        
+        return self.response_404_none()
+
 
 #############################
 ##  Default API View Sets  ##
@@ -195,9 +190,8 @@ class AlphagramViewSet(viewsets.ModelViewSet):
 ##  Web Views (non-API)  ##
 ###########################
 def index(request):
-    return HttpResponse( ## TODO: view index, jinja, css
+    return HttpResponse(
         "<p>Word API Views index </p><br />" +
         "<h3>Words: " + str( Word.objects.count() ) + "</h3> "+
-        # s+"<br / >"+
         "<p><a href='/api/'>API</a></p>"
         )
