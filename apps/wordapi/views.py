@@ -8,7 +8,6 @@
     This file also includes a customized 404 response "None" for empty queries, and a view for the web index page
 """
 
-## TODO 
 
 import datetime, re
 
@@ -73,27 +72,32 @@ class ValidParamView():
 ##  API Views  ##
 #################
 class WordBySubstringView(ValidParamView, APIView):
-    
+    """ API view for Get word matching query-substring
+    """
     def get(self, request, format=None, substr_input=""):
         """ API's GET method, for substring-input
 
             Queries Word model (dictionary words) for set of Words for which input is a substring.
         """
-        if substr_input:
+        if self.valid_param(substr_input):
+            # Validate query param
             try:
                 # Query filtering for case-insentive containment of the input-string (as a substring) in Word entry labels
                 queryset = Word.objects.filter(label__icontains=substr_input)
+                print(str(queryset))
+                if not queryset:
+                    return self.response_404_none()
+                else:
+                    # Continue if queryset found
+                    serializer = WordSerializer(queryset, many=True)
+                    return Response(serializer.data)
             except:
                 # 404/"None" if no results
-                return response_404_none()
+                return self.response_404_none()
 
-            # Continue if queryset found
-            ## count
-            serializer = WordSerializer(queryset, many=True)
-            return Response(serializer.data)
         else:
-            return response_404_none()
-    
+            # 404 if empty or invalid param
+            return self.response_404_none()
 
 
 class AnagramView(APIView): # TODO - URL param
