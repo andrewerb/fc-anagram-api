@@ -14,14 +14,6 @@ Models:
     Word
     WordDefinition : Not really used at this point, but available.
 
-TODO: 
-    - ORDER BY
-    - created_date
-    - FIX EDITABLE VALUES - date, anagram etc
-    - Deletion!
-    - Subtract result list from anagram list before sort.
-    - Append dict
-
 """
 
 
@@ -37,7 +29,6 @@ class WordLanguage(models.Model):
     
     Associated with words by a many-to-one relationship. The name is cumbersome due to the vague nature of the word 'language'. Unique, by label.
     """
-
     ##  Attributes  ##
     label = models.CharField(max_length=30, unique=True)
 
@@ -52,9 +43,9 @@ class WordLanguage(models.Model):
 
 class Alphagram(models.Model):
     """ Alphagram - alphabetically sorted string/word. 
+    
     Referenced by words as many-to-one relationship. Used to find words' anagrams. Unique by label; redundancy would make this useless as an anagram-key.
     """
-
     ##  Attributes  ##
     label = models.CharField(max_length=50, unique=True)
 
@@ -71,7 +62,6 @@ class Alphagram(models.Model):
 class Word(models.Model): #### ORDER_BY
     """ Words (singular entries) from dictionary list.
     """
-
     ##  Attributes  ## 
     label = models.CharField(max_length=50)  # Labels are not unique, because other words in DB (homographs) may have same spelling w/ unique IDs.
     language = models.ForeignKey(WordLanguage, blank=True, null=True, on_delete=models.CASCADE)
@@ -134,9 +124,6 @@ class WordDefinition(models.Model):
     """ Dictionary definition. Usable for multiple definition entries, classed by language. Possibly in need of extending.
         
     Has many-to-one relationships with Language (of the definition), and with Word (which the definiton is for). Definition and word can be different languages.
-    
-    Attributes:
-        label, detail, word, language
     """
     ##  Attributes  ##
     label = models.CharField(max_length=30, blank = False)
