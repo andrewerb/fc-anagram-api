@@ -40,23 +40,23 @@ class ValidParamView():
         """
         return Response("None", status=status.HTTP_404_NOT_FOUND)
 
-    def has_numbers(self, inputString=""):
+    def _has_numbers(self, inputString=""):
         return bool(re.search(r'\d', inputString))
 
     def valid_param(self, param_str=""):
-        """ Boolean
+        """ Boolean - validates appropriate/useful query param strings
         """
         if not param_str:
             return False #return self.__response_404_none()
 
-        elif self.has_numbers(param_str):
+        elif self._has_numbers(param_str):
             return False
 
         else:
             return True
 
     def long_valid_param(self, param_str="", param_len=2):
-        """ Return 404 response if query parameter is too short or isn't valid
+        """ Boolean. False, if param is too short or isn't valid
 
             This is a hack for not processing very short queries on the DB, primarily for anagrams by substring.
             NOTE: An expanded build would ideally encorpoate API views to a data model to handle shorter substring queries.
@@ -84,7 +84,6 @@ class WordBySubstringView(ValidParamView, APIView):
             try:
                 # Query filtering for case-insentive containment of the input-string (as a substring) in Word entry labels
                 queryset = Word.objects.filter(label__icontains=substr_input)
-                print(str(queryset))
                 if not queryset:
                     return self.response_404_none()
                 else:
@@ -95,40 +94,39 @@ class WordBySubstringView(ValidParamView, APIView):
                 # 404/"None" if no results
                 return self.response_404_none()
 
-        else:
-            # 404 if empty or invalid param
-            return self.response_404_none()
+        # 404 if empty or invalid param
+        return self.response_404_none()
 
 
-class AnagramView(APIView): # TODO - URL param
+class AnagramView(ValidParamView, APIView):
     """ Anagram fetching by Subject-Word label
         
         Queries alphagram of subject-word, filters for words associated, and returns that list sans the subject-word.
         Returns a set of Word objects
     """
-    def get(self, request, format=None, label_input=""): ## TODO!!! TAKE PARAM FROM URL ROUTER
-
-        # TODO: regexp check for alpha chars useful here
-        #label_input = "listen" # TODO - UPDATE!!! PARAMS, for non-exist - try, or filter; combine/join!!
-        
-        if label_input: 
-            # If input isn't empty
+    def get(self, request, format=None, label_input=""):
+        """ API get method, takes URL query param
+        """
+        if self.valid_param(label_input):
+            # query param valid- non-exmpty etc
             try:
                 subject_word = Word.objects.get(label=label_input) # Check for subject-word
             except:
-                # Subject word doesn't exist. No anagrams. Return none.
-                return response_404_none()
+                # Subject word doesn't exist in data 
+                # No anagrams. Return none.
+                return self.response_404_none()
             
-            # If subject-word object was found
-            queryset = subject_word.alphagram.word_set.all().exclude(id=subject_word.id)  # The anagram queryset is the set of words sharing the same alphagram as the subject-word, excluding the subject-word itself.
+            # If subject-word object was found:
+            queryset = subject_word.alphagram.word_set.all().exclude(id=subject_word.id)  
+            # Anagram queryset
+            # Set of words sharing same alphagram as the subject-word, excluding the subject-word itself.
             
             if queryset.count():
+                # Final check for anagrams present in queryset, else 404
                 serializer = WordSerializer(queryset, many=True)
                 return Response(serializer.data)
-
-            # TODO: params, combine/join
         
-        return response_404_none()
+        return self.response_404_none()
 
 
 class AnagramBySubstringView(APIView): # TODO - less copy pasta?
