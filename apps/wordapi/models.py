@@ -1,18 +1,56 @@
-""" Word API Data models
+""" Dictionary-Words / Anagram API app - Data models
 
-For Django FC_coding_challenge - wordapi app.
-This model exist for querying words and their anagrams, across lanaugages/dictionaries, via API.
+For Django FC_coding_challenge - wordapi app
+This model exists for querying words and their anagrams, across lanaugages/dictionaries, via web API.
 
-- The intended usecase of this model and API is to find word-matches for which user-submitted queries are a substring, and anagrams of those matching subject-words.
+
+- The intended usecase of this model and API is to find word-matches for which user-submitted queries/input are a substring, and anagrams of those matching subject-words.
 - Anagrams are recombinations of the order of letters (preserving the same count) of a subject-word, into another word.
 - All words that are anagrams of one another will also share the same alphagram– the string resulting from sorting a word/string's letters/characters alphabetically.  https://en.wiktionary.org/wiki/alphagram
 - Alphagrams are used here to assocate words in data that are anagrams to each other. Views can query the alphagram of a subject-word to get other words with that alphagram, which are the subject-word's anagrams.
+
 
 Models:
     WordLanguage
     Alphagram
     Word
     WordDefinition : Not really used at this point, but available.
+
+
+A lot of the heavy lifting in the Word model. This is because:
+    - Words are most of the data
+    - Words are queried the most / make sense to query much of the time
+    - Words need to have some form of relationship with their alphagram or anagram. (Here, the have a many-to-one relationship witht their alphagram, by which anagrams can be queried and associated).
+
+    In Word's overridden save() method, alphagrams are solved, saved in data if needed, and set as a foreign relation to word.
+    A caveat here is that it is very hard (slow) to bulk initialize the word list, because it relies so heavily on the save() method, and alphagrams aren't currently designed to be left blank.
+
+
+Future optimizations are very possible, especially in this data model:
+
+    - Moving where alphagrams are generated out of solely the save() method.
+        
+        This would primarily be to optimize the inital database setup Django's bulk_create method.
+        
+        A complication/caveat in this current implementation is the overhead in initialization with file reads and either queuing alphagrams in-memory or making many calls to the database anyway to check for alphagram values. The whole point of bulk_create is to limit database access a bit, and those value checks wouldn't help much.
+
+        ** A likely solution would be to fix the alphagram model's requirements, bulk_create words in data from a dictionary file, and go over those values later to assign alphagrams. It's not really fast either way, but splits up work.
+
+    - Associating words with their anagram results directly. 
+        
+        This would require a lot more work and overhead when saving words (updating a value in data for EVERY word that is an anagram of another being entered or updated). But, it would save a significant amount of time in user-querying. This could even be stored as a static text field in a Word's data table, saving an entire second query when pulling a queryset of subject-words.
+        
+        Again, it's a lot more overhead to set up, so it's ommitted here.
+
+    - A separate data model for substring queries would help optimization and would be an interesting/useful enhancement to this project.
+        
+        Particularly in a frontend implementation where API data is requested for updates as the user types, shorter substrings (API input-params/search strings) for "contains" are VERY slow. They require the DB to look over too many entries.
+
+        An optimization for this is to pre-process those results beforehand and shift them over entirely to another model/data-table for short substrings. For all 3 characters, all alphabetical, the database size would be 2^3: 17576 entries. Compared to a data table of nearly 35,000 words, this would be more efficient.
+
+        Furthermore, rather than using an "icontains" query-filter, these search references would represent exact matches to string input, which is quicker to search in a sorted data table. This could even be served by a separate database (diverting traffic and machine work), called via a separate API endpoint by the client, or an in-memory data-store.
+
+        Depending on size, something like single letter query data could be pre-cached by the client. 26 entries. But they'd have to be designed to not be overwhelming to serve.
 """
 
 
