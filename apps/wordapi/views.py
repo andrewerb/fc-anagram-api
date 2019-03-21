@@ -197,7 +197,9 @@ class AlphagramViewSet(viewsets.ModelViewSet):
 ###########################
 def index(request):
     return HttpResponse(
-        "<p>Word API Views index </p><br />" +
-        "<h3>Words: " + str( Word.objects.count() ) + "</h3> "+
+        "<p>Word API index View</p><br />" +
+        "<h3>Words in data: " + str( Word.objects.count() ) + "</h3> "+
+        "<h3>Languages: " + str( WordLanguage.objects.count() ) + "</h3> "+
+        "<h3>Alphagrams: " + str( Alphagram.objects.count() ) + "</h3> "+
         "<p><a href='/api/'>API</a></p>"
         )
