@@ -1,8 +1,8 @@
 """ Word API Data models
 
 For Django FC_coding_challenge - wordapi app.
+This model exist for querying words and their anagrams, across lanaugages/dictionaries, via API.
 
-- This model exist for querying words, across lanaugages/dictionaries, via API.
 - The intended usecase of this model and API is to find word-matches for which user-submitted queries are a substring, and anagrams of those matching subject-words.
 - Anagrams are recombinations of the order of letters (preserving the same count) of a subject-word, into another word.
 - All words that are anagrams of one another will also share the same alphagram– the string resulting from sorting a word/string's letters/characters alphabetically.  https://en.wiktionary.org/wiki/alphagram
@@ -13,7 +13,6 @@ Models:
     Alphagram
     Word
     WordDefinition : Not really used at this point, but available.
-
 """
 
 
@@ -23,7 +22,9 @@ from django.db import models
 from django.utils import timezone
 
 
+###################
 ##  Data Models  ##
+###################
 class WordLanguage(models.Model):
     """ Language, for words and dictionary entries.
     
@@ -37,8 +38,8 @@ class WordLanguage(models.Model):
 
     def __str__(self):
         return self.label
-    ## TODO: META, sort, SAVE
-    ## SORT
+    
+    # TODO: Order by label
 
 
 class Alphagram(models.Model):
@@ -71,7 +72,7 @@ class Word(models.Model): #### ORDER_BY
     is_palindrome = models.BooleanField(default=False, editable=False)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     
-    #TODO: homograph_count = models.IntegerField(default=0) # use if able to initialize (would require updating other words with same label).
+    # TODO: homograph_count = models.IntegerField(default=0) # use if able to initialize (would require updating other words with same label).
     
     def __str__(self):
         return self.label
@@ -82,18 +83,18 @@ class Word(models.Model): #### ORDER_BY
         Attributes checked here: label-lowercasing, alphagram object, language
         """
 
-        # Enforcing lowercase in database, for uniformity
+        ##  Enforcing lowercase in database, for uniformity  ##
         self.label = self.label.lower()
         print("word-label is: " + self.label + "  -- SAVED!")
 
-        # Check for palindrome (if word is same reversed)
+        ##  Check for palindrome (if word is same reversed)  ##
         # Uses extended slice syntax for reversal, for efficiency
         if self.label == self.label[::-1]:
             self.is_palindrome = True
         else:
             self.is_palindrome = False
 
-        # Default language - set language if there is only 1 present in data.
+        ##  Default language - set language if there is only 1 present in data.  ##
         if WordLanguage.objects.count() == 1:
             self.language = WordLanguage.objects.get(id=1)
 
