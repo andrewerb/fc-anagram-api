@@ -15,6 +15,7 @@ django-configurations = "*"
 markdown = "*"
 django-filter = "*"
 jinja2 = "*"
+factory-boy = "*"
 
 [requires]
 python_version = "3.7"
