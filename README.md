@@ -2,21 +2,13 @@
 
 A web API in [Python 3](https://www.python.org), [Django](https://www.djangoproject.com), and [Django Rest Framework](https://www.django-rest-framework.org) for searching words and anagrams from a dictionary.
 
-This project serves as a coding challenge submission by [Andrew Erb](http://andrewerb.com)Andrew Erb. The project takes a large dictionary-file of words, sorts them into a database, and provides a Python/Django API for requesting dictionary-word data.
-
-API methods are able to get:
-
-- Words by *substring-matches* (words containing user-input as a substring)
-- Anagram-words
-- Anagram-words of substring of substring matches \*
-
-\*In this project, only the first 10 anagram substring-matches are returned, from an overall set of anagram-words, sorted by their second character. This is as specified in the coding challenge.
+This project serves as a coding challenge submission by [Andrew Erb](http://andrewerb.com). The project takes a large dictionary-file of words, sorts them into a database, and provides a Python/Django API for requesting dictionary-word data.
 
 ## Getting started
 
 ### Requirements
 
-- Python 3.7.2+
+- Python 3.7.2+ ...that's about it :)
 
 This project is built in Python 3.7.2+, Django 2.1.7+, and Django Rest Framework 3.9.2+
 
@@ -57,7 +49,9 @@ python manage.py migrate
 
 We can now run the app if desired, but it's missing any data. So, the next step, then, is to populate the database with words from the included dictionary.txt
 
-**PLEASE NOTE BEFORE THIS NEXT STEP**
+#### Initalizing the database
+
+PLEASE NOTE BEFORE THIS NEXT STEP
 
 Before proceeding, be aware that in its current iteration, the initial database setup is ***slow*** . It will take a few minutes to complete. (Notes on the issue with this design are expanded upon in apps/wordapi/models.py)
 
@@ -77,3 +71,6 @@ python manage.py runserver
 ```
 
 The project should now be serving on should serve on http://127.0.0.1:8000/ by default.
+
+## About
+TBC
