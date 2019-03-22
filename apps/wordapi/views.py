@@ -4,6 +4,8 @@
 
     API Views:
     words, languages, words by substring (containing input) match, anagrams, anagrams by substring
+
+    There are attempts here to abstract out some API view class methods and behaviors to try to remain a bit abstract and keep code DRY. This could be enhanced further, especially if this app/project/API were to scale.
 """
 
 # Python libraries. Time and regular expressions
@@ -35,7 +37,7 @@ class ValidParamView():
         """ Return "None" and 404 status code
             For GET requests from API endpoints, where/when queries yield no result
         """
-        return Response("None", status=status.HTTP_404_NOT_FOUND)
+        return Response('None', status=status.HTTP_404_NOT_FOUND)
 
     def _has_numbers(self, inputString=""):
         return bool(re.search(r'\d', inputString))
