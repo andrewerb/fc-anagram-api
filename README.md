@@ -43,7 +43,7 @@ Next steps are getting the database up and running and populating it with words 
 To setup the Django database, navigate to the project's root directory. Use Django's manage.py migrate command to initialize our DB. This is best done after reviewing the database settings in *config/settings.py*
 
 ```bash
-python manage.py makemigration
+python manage.py makemigrations
 python manage.py migrate
 ```
 
