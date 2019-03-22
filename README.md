@@ -126,19 +126,19 @@ data is where the dictionary.txt file is, read from populate_db.
 
 ## About
 
-The scope of this project is to provide a way, via Django, to search the words in the dictionary.txt (again, file of 349,885 words) by for words containing a substring, and for matching anagrams. Loading values into a database is an obvious and efficient way to handle such data. And as such, we can extend an API with that data.
+The objective of this project is to provide a way, via Django, to search the set of words in dictionary.txt (again, a file of 349,885 words), for words containing a given substring, and for matching anagrams within those words. Loading values into a database is an obvious and efficient way to handle such data. And as such, we can extend an API with that data.
 
 This app's API methods are able to get:
 
 - Words by *substring-matches* (words containing user-input as a substring)
 - Anagram-words
-- Anagram-words of substring of substring matches \*
+- Anagram-words of substring matches\*
 
-\*In this project, only the first 10 anagram substring-matches are returned, from an overall set of anagram-words, sorted by their second character. This is as specified in the coding challenge.
+\***(In this project, only the first 10 anagram substring-matches are returned, from an overall set of anagram-words, sorted by their second character. This is as specified in the coding challenge.)**
 
-This project relies on [Alphagrams](https://en.wiktionary.org/wiki/alphagram) as a means of matching words that are anagrams to each other. An alphagram is a sorted string of the same characters as the subject-word. Any words that are anagrams will share the same alphagram.
+This project relies on [Alphagrams](https://en.wiktionary.org/wiki/alphagram) as a means of matching words that are anagrams with one another. An alphagram is a sorted string of the same characters as its subject-word. Any words that are anagrams will share the same alphagram.
 
-The data model represents this using Word, WordLanguage, and Alphagram objects. Anagrams are just the result of a query of words with a relationship to the same Alphagram object/value. There is also a WordDefinition model, though it is not used here. But more models and languages could be added with associations to words in data.
+This project's data model represents this using Word, WordLanguage, and Alphagram objects. Anagrams are the result of a query of Words with a relationship to the same Alphagram object/value. There is also a WordDefinition model, though it is not used here. But more models and languages could be added with associations to words in data.
 
 Substring matches are also found via queries in API views (controller).
 
@@ -153,7 +153,7 @@ Generic views (non-API endpoints) are also handled at this app's routing and vie
 
 At scale, a separate data model for hard-coded responses to smaller substring queries could even be offloaded to a separate database instance, separate app, and separate API. Ideally these could help scale for better concurrency to the client and end-user.
 
-### Further Pptimization and Enhancements
+### Further Optimization and Enhancements
 
 - In memory data store, such as Redis.
 - Cloud server environment (such as AWS) for better scaled structuring, such as load balancers and database instances.
@@ -171,25 +171,25 @@ At scale, a separate data model for hard-coded responses to smaller substring qu
 
 While this wasn't my first project dealing with language or grammar, it was a relatively larger data-scale one, and an interesting one. I didn't now what *alphagrams* or *homographs* were prior, for instance. Further exploring data respresentations of words, language, translation would be an appealing undertaking.
 
-# Favorite Sci-Fi movies
+## Favorite Sci-Fi movies
 
 I couldn't see not answering this question, though it didn't exactly come up organically in my code comments anywhere (which are longer than what I often write as-is).
 
-I often muse that my favorite sci-fi movie is the late 90s romcomc, (*Kate and Leopold*)[https://www.imdb.com/title/tt0035423/]. This is typically just to invite someone to squabble with me over whether it is or is not sci-fi, to which I argue that it's a time-travel-centric story. And not a bad one at that.
+I often muse that my favorite sci-fi movie is the 2001 romcom, [Kate and Leopold](https://www.imdb.com/title/tt0035423/). This is typically just to invite someone to squabble with me over whether it is or is not sci-fi, to which I argue that it's a time-travel-centric story, and not a terrible one at that.
 
 In truth, picking an actual favorite sci-fi movie is quite tricky. So, I made a list:
 
 - The Iron Giant
 - Wall-E
 - Cowboy Bebop (The Movie, if it has to be a movie)
-- Blade Runner 2049
+- Blade Runner 2049 (but obviously the original is a classic, of which I prefer The Final Cut)
 - District 9
 - Serenity/Firefly
 - Children of Men
-- The Matrix (which had *no sequels whatsoever*)
+- The Matrix (which had **no sequels whatsoever**)
 - Star Wars (but not most of that post-80s nonsense)
 - Back to the Future (Part 2 and Part 3 are pretty good as long as you watch them in one sitting)
 - Terminator 2 (which is a really wonderful example of color as a cinematic storytelling tool)
-- Black Mirror (basically a movie)
+- Black Mirror (basically a movie anthology), not as much Bandersnatch though.
 
 ...And I am available to talk excessively at length about any/all of them.
