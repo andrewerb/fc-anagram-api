@@ -49,11 +49,11 @@ python manage.py migrate
 
 We can now run the app if desired, but it's missing any data. So, the next step, then, is to populate the database with words from the included dictionary.txt
 
-#### Initalizing the database
+### Initalizing the database
 
-PLEASE NOTE BEFORE THIS NEXT STEP
+**PLEASE NOTE BEFORE THIS NEXT STEP**
 
-Before proceeding, be aware that in its current iteration, the initial database setup is ***slow*** . It will take a few minutes to complete. (Notes on the issue with this design are expanded upon in apps/wordapi/models.py)
+Before proceeding, be aware that in its current iteration, the initial database setup is ***slow*** . It will take a few minutes to complete. (Notes on this in the About section below).
 
 To proceed, use manage.py for this project's populate_db command.
 \*(**Note:** avoid running this more than once as it currently lacks checks to keep it from redundant operations, and redundant Words are allowed by the data model.)
@@ -73,4 +73,50 @@ python manage.py runserver
 The project should now be serving on should serve on http://127.0.0.1:8000/ by default.
 
 ## About
-TBC
+
+The scope of this project is to provide a way, via Django, to search the words in the dictionary.txt (again, file of 349,885 words) by for words containing a substring, and for matching anagrams. Loading values into a database is an obvious and efficient way to handle such data. And as such, we can extend an API with that data.
+
+This app's API methods are able to get:
+
+- Words by *substring-matches* (words containing user-input as a substring)
+- Anagram-words
+- Anagram-words of substring of substring matches \*
+
+\*In this project, only the first 10 anagram substring-matches are returned, from an overall set of anagram-words, sorted by their second character. This is as specified in the coding challenge.
+
+### API Usage
+
+This app currently only supports GET methods. As this is a public API (for GET requiests, at least), methods take arguments via URL path and don't need additional parameters in their request. JSON API endpoints can be accessed at in the browser via their URL, in a web front-end, or pulled up through a program such as [HTTPie](https://httpie.org/).
+
+The primary API methods are:
+
+- Words by Substring-match
+http://127.0.0.1:8000/api/substrings/substr
+
+- Anagram by word label (the exact word itself)
+http://127.0.0.1:8080/api/anagrams/label
+
+- Anagrams of substring-match words\*
+http://127.0.0.1:8080/api/substringanagrams/substr
+\*Only first 10 results of anagrams sorted by 2nd character are returned.
+
+(Insert whichever URL and port you're using to serve this project).
+
+Only alpha characters will yield any results. For requests with no values found, or for input that isn't valid, expect a response with a 404-status, and the value:
+
+```JSON
+'None'
+```
+
+### Overview
+
+This project relies on [Alphagrams](https://en.wiktionary.org/wiki/alphagram) as a means of matching words that are anagrams to each other. An alphagram is a sorted string of the same characters as the subject-word. Any words that are anagrams will share the same alphagram.
+
+The data model represents this using Word, WordLanguage, and Alphagram objects. Anagrams are just the result of a query of words with a relationship to the same Alphagram object/value. There is also a WordDefinition model, though it is not used here. But more models and languages could be added with associations to words in data.
+
+Offhand, there are a few optimizations this project could use:
+
+- A production server: The app will work better/faster off of SQLite3
+- Database initialization/population bulk-batching: While this only slows the initial setup/installation process, it is not ideal for theoretical extension of this app for the onboarding of large new datasets to take so long. Bulk_create operations would definitely help, but the way in which Word models are saved needs refactoring. This is is referenced further in *apps/wordapi/models.py*.
+- A data model for small substring searches for word matches, to optimize queries. Particularly useful for autofill-type behavior in the client.
+- Hardcoded anagram matches. Would eliminate some queries but require more initialization overhead in data.
