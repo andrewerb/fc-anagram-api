@@ -98,7 +98,7 @@ Only alpha characters will yield any results. For requests with no values found,
 
 ## Project Structure Overview
 
-This is a pretty heavily appreciated overview of the project directory structure:
+This is a pretty heavily abbreviated overview of the project directory structure:
 
 ```bash
 fc_anagram_api
