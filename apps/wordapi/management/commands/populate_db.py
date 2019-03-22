@@ -2,9 +2,11 @@
 
     Reads dictionary of words from data/dictionary.txt
     
-    NOTE: An area of this module that is significantly needed is batching of ORM/model objects before insertion. 
+    Work for alphagram creation (and thus finding anagrams by querying for alphagram relationships), is handled in the model. This saves a lot of work for initial database population and maintaining anagram relationships, but does cause other issues because of that overhead.
+
+    NOTE: An area of this module that is significantly needed is bulk batching of ORM/model objects before insertion. 
     This is currently ommitted due to complication with alphagram/anagram creation, foreign key setting, and the lack of time saved by it.
-    This ommission really extends the setup time, is inefficient, and would be a priority enhancement to the project with more time.
+    This ommission really extends the setup time, is inefficient, and would be a high-priority enhancement to the project with more time.
 """
 
 import os, sys
@@ -19,11 +21,12 @@ class Command(BaseCommand):
 
         Command is the class manage.py will look to for methods when this module is referenced to it.
     """
-
+    
     help = 'Populates the database.' # help attribute For info on module/command
 
-    def __set_language(self, lang_label="English"):
+    def _set_language(self, lang_label="English"):
         """ Helper method to handle() for language object
+
             Callable by handle() to save a language object. Defaults to English, for this project's dictionary purposes. A different language label can be passed.
         """
         if lang_label: # Ignore setup if blank value passed
@@ -34,8 +37,11 @@ class Command(BaseCommand):
                 lang = WordLanguage(label=lang_label)
                 lang.save()
         
-    def __read_dict_to_words(self, dict_file="data/dictionary.txt"):
-        dict_file = "data/_shortlist.txt"
+    def _read_dict_to_words(self, dict_file="data/dictionary.txt"):
+        """ Helper method to handle() for reading file and creating new word objects
+
+            File can be reassigned by parameter value. No CLI-level parameters are provided currently, however.
+        """
         
         input_file_word_count = 0 # for count at the end of file read/insertion
         
@@ -55,6 +61,7 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         """ Code run by manage.py and commands for this module
+
             Checks for words in data. Sets up English as a default if missing.
             Reads word-input/dictionary, batches Word objects, saves objects into DB.
         """
@@ -62,9 +69,9 @@ class Command(BaseCommand):
         print("Initializing...")
 
         if not WordLanguage.objects.count(): # If no languages are already set up
-            self.__set_language() # Add English language by default, from helper method
+            self._set_language() # Add English language by default, from helper method
 
-        self.__read_dict_to_words() # Read and add words from helper method
+        self._read_dict_to_words() # Read and add words from helper method
         
 
 
