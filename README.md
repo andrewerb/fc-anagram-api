@@ -49,28 +49,27 @@ python manage.py migrate
 
 We can now run the app if desired, but it's missing any data. So, the next step, then, is to populate the database with words from the included dictionary.txt
 
-### Initalizing the database
+### Initalizing the Database
 
 **PLEASE NOTE BEFORE THIS NEXT STEP**
 
-Before proceeding, be aware that in its current iteration, the initial database setup is ***slow*** . It will take a few minutes to complete. (Notes on this in the About section below).
+Before proceeding, be aware that the initial database setup is ***slow***. The database is somewhat large, and it will take at least a few minutes to complete.
 
-To proceed, use manage.py for this project's populate_db command.
-\*(**Note:** avoid running this more than once as it currently lacks checks to keep it from redundant operations, and redundant Words are allowed by the data model.)
+We can use a ready-made datadump (from a DB created from the text file in *data/*) as a [fixture](https://docs.djangoproject.com/en/2.1/howto/initial-data/) to setup the Django database. 
+
+Navigate to the project's root directory, where *manage.py* is. If necessary, first review the database settings in *config/settings.py*. Use Django's manage.py **loaddata** command as follows.
 
 ```bash
-python manage.py populate_db
+python manage.py loaddata apps/wordapi/fixtures/wordapi_data.json
 ```
 
-This command reads file in data/dictionary.txt
-
-...After several minutes, use runserver to start the database.
+...And after several minutes, use runserver to start the database.
 
 ```bash
 python manage.py runserver
 ```
 
-The project should now be serving on should serve on http://127.0.0.1:8000/ by default.
+The project should now be running, and should serve on http://127.0.0.1:8000/ by default. You're ready to query the API.
 
 ## API Usage
 
