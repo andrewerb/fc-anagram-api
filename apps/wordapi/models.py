@@ -102,7 +102,7 @@ class Word(models.Model): #### ORDER_BY
     """ Words (singular entries) from dictionary list.
     """
     ##  Attributes  ## 
-    label = models.CharField(max_length=50)  # Labels are not unique, because other words in DB (homographs) may have same spelling w/ unique IDs.
+    label = models.CharField(max_length=50, db_index=True)  # Labels are not unique, because other words in DB (homographs) may have same spelling w/ unique IDs.
     language = models.ForeignKey(WordLanguage, blank=True, null=True, on_delete=models.CASCADE)
 
     ##  Non-editable attributes  ##
