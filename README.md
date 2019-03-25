@@ -4,7 +4,7 @@ A web API in [Python 3](https://www.python.org), [Django](https://www.djangoproj
 
 This project serves as a coding challenge submission by [Andrew Erb](http://andrewerb.com). The project takes a large dictionary-file of words, sorts them into a database, and provides a Python/Django API for requesting dictionary-word data.
 
-## Getting started
+## Getting started - Installation and Setup
 
 ### Requirements
 
@@ -14,11 +14,11 @@ This project is built in Python 3.7.2+, Django 2.1.7+, and Django Rest Framework
 
 Django and Django Rest can be installed via Pipenv.
 
-To get the project going, the user needs to have at least Python 3.7. Pip is supported, but Pipenv (used for this project), or some form of version/package managers are encouraged. (Not everyone likes Pipenv. Poetry and PyEnv are other options that come highly recommended, but I haven't yet used them.)
+To get the project going, the user needs to have at least Python 3.7 and Pip, Pipenv (used for this project), or a similar form of Python version/package manager. (Not everyone likes Pipenv. Poetry and PyEnv are other options that come highly recommended.)
 
 This is very much a **dev** build of this project, and a proof of concept. So far, it's only deployed using Django's *runserver* command and SQLite3 as a DB. A production build of this project would need a production-ready server and database, such as PostgreSQL and Gunicorn.
 
-It would not take much set up to change settings to use a more robust DB. Environment settings and allowed_hosts can be changed in this project's *settings.py* in the *config/* directory.
+It would not take much set up to change settings to use a more robust DB. Environment settings and allowed_hosts can be changed in *config/settings.py* directory.
 
 ### Installation
 
@@ -38,16 +38,16 @@ pipenv install
 
 ### Setup
 
-Next steps are getting the database up and running and populating it with words from a large (349,885 line-items) dictionary-file, dictionary.txt in the *data/* directory.
+Next steps are getting the database running, and populating it with words from a large (349,885 line-items) dictionary-file, in *data/dictionary.txt* directory.
 
-To setup the Django database, navigate to the project's root directory. Use Django's manage.py migrate command to initialize our DB. This is best done after reviewing the database settings in *config/settings.py*
+To setup the Django database, navigate to the project's root directory. We'll use Django's migrate commands to initialize our database migrations. This is best done after reviewing the database settings in *config/settings.py* for the user's deployment environment's database system.
 
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-We can now run the app if desired, but it's missing any data. So, the next step, then, is to populate the database with words from the included dictionary.txt
+We can now run the app if desired, but it's missing any data. So, the next step, is to populate the database with words from the included dictionary.txt.
 
 ### Initalizing the Database
 
@@ -55,7 +55,7 @@ We can now run the app if desired, but it's missing any data. So, the next step,
 
 Before proceeding, be aware that the initial database setup is ***slow***. The database is somewhat large, and it will take at least a few minutes to complete.
 
-We can use a ready-made datadump (from a DB created from the text file in *data/*) as a [fixture](https://docs.djangoproject.com/en/2.1/howto/initial-data/) to setup the Django database. 
+We can use a ready-made datadump (from a DB created from the text file in *data/*) as a [fixture](https://docs.djangoproject.com/en/2.1/howto/initial-data/) to setup the Django database.
 
 Navigate to the project's root directory, where *manage.py* is. If necessary, first review the database settings in *config/settings.py*. Use Django's manage.py **loaddata** command as follows.
 
