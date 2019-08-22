@@ -1,6 +1,6 @@
-# Django Dictionary-Words / Anagram API
+# Django Anagram API
 
-A web API in [Python 3](https://www.python.org), [Django](https://www.djangoproject.com), and [Django Rest Framework](https://www.django-rest-framework.org) for searching words and anagrams from a dictionary.
+A web API in [Python 3](https://www.python.org), [Django](https://www.djangoproject.com), and [Django Rest Framework](https://www.django-rest-framework.org) for searching words and anagrams from a list of words from a "dictionary" (linguistic, not the data structure) file.
 
 This project serves as a coding challenge submission by [Andrew Erb](http://andrewerb.com). The project takes a large dictionary-file of words, sorts them into a database, and provides a Python/Django API for requesting dictionary-word data.
 
